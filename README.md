@@ -1,9 +1,7 @@
 # r-bio-krx
 > Stock Analysis in KRX Bio Sector 
 
-[![r-image]][r-url]
-[![python-image]][python-url]
-[![aws-image]][aws-url]
+[![r-image]][r-url] [![python-image]][python-url] [![aws-image]][aws-url]
 
 <img src="header.png" width="300"  width="250">
 
@@ -16,33 +14,52 @@ KRX에 상장된 제약, 바이오 주식들을 분석합니다.\
 + r-bio-krx : https://github.com/hyukhwankwon/r-bio-krx
 
 
+## Language
+
+> `R 3.5.0` `Python 3.6`
+
+
 ## DataSet
 
-1. Raw Data
-    + MASTER : stock tickers and info
-    + INDEX : kospi, kosdqa index price    
-    + KRX_DATA_ALL : all stock data in KRX market
-    + NAVER_INDUSTRY : industry from NAVER stocks
++ Raw Data
+    + MASTER.csv ( _stock tickers and info_ )
+    + INDEX.xlsx ( _kospi, kosdqa index price_ )
+    + KRX\_DATA\_ALL.csv ( _all stock data in KRX market_ )
+    + NAVER_INDUSTRY.xlsx ( _industry from NAVER stocks_ )
 
-2. Polished Data
+<!-- 2. Polished Data
     + MASTER
     + NAVER_IDST
     + KRX_DATA_ALL
     + KRX_DATA_BIO
-    + KRX_DATA_BIO_bycode
+    + KRX_DATA_BIO_bycode -->
+
+
+## Process
+
+1. Sourcing Raw Data
+    + `python` ebest api
+    + `Urllib` `BeautifulSoup` crawling 
+2. Pre-processing
+    + `dplyr` rename columns to 'f_code', 's_code', 'sector', 'name'
+    + `dplyr` filter != 0 (zero omit), left_join
+3. Modeling
+    + group_by %>% summarise to summary all output data with grouping.
+    + xts, do.call, cbinding with every single data before visualization.
+4. Output Sharing
+    + visualization: `ggplot2` `dygraph` `plotly`
+    + sharing: `flexdashboard`, `shiny`
 
 
 ## Library
 
 ```r
-library(readxl)
-library(tidyverse)
-library(reshape2)
-library(xts)
-library(dygraphs)
-library(plotly)
-library(quantmod)
+R library <- c('readxl', 'tidyverse', 'reshape2', 'xts', 'dygraphs', 'plotly', 'quantmod')
 ```
+```python
+PYTHON import urllib import BeautifulSuop
+```
+
 
 ## Release History
 
