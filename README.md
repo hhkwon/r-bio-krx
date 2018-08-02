@@ -1,4 +1,4 @@
-# R_BIO_KRX
+# r-bio-krx
 > Stock Analysis in KRX Bio Sector 
 
 [![r-image]][r-url]
@@ -11,9 +11,9 @@
 ## What is this?
 
 KRX에 상장된 제약, 바이오 주식들을 분석합니다.\
-본 프로젝트(R_BIO_KRX) 목적은 r과 shiny를 이용한 데이터 시각화 활용입니다.
+본 프로젝트(r-bio-krx) 목적은 r과 shiny를 이용한 데이터 시각화 활용입니다.
 
-+ R_BIO_KRX : https://github.com/hyukhwankwon/R_BIO_KRX
++ r-bio-krx : https://github.com/hyukhwankwon/r-bio-krx
 
 
 ## DataSet
