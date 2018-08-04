@@ -32,6 +32,7 @@ KRX_DATA_ALL[,"X0"] <- NULL
 KRX_DATA_ALL <- filter(KRX_DATA_ALL, vol_s!=0)
 KRX_DATA_ALL <- rename(KRX_DATA_ALL, date = X)
 KRX_DATA_ALL[,'date'] <- as.Date(KRX_DATA_ALL[,'date'])
+KRX_DATA_ALL[,'cap_mil'] <- KRX_DATA_ALL[,'cap_mil'] * 10000000
 str(KRX_DATA_ALL)
 
 # PICK BIO FROM KRX_DATA
