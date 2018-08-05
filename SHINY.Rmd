@@ -1,90 +1,649 @@
 ---
-title: "Row Orientation"
+title: "BIO SECTOR OVERVIEW in KRX"
 output: 
   flexdashboard::flex_dashboard:
     theme: lumen
+    css: styles.css
 runtime: shiny
 ---
 
 ```{r global, include=FALSE}
-source('1_PAGE_1.R', encoding="utf-8")
-library(flexdashboard)
+library(readxl)
+library(tidyverse)
+library(reshape2)
+library(xts)
+library(dygraphs)
+library(plotly)
+library(quantmod)
+library(knitr)
+library(kableExtra)
+theme_set(theme_classic())
+
+#OPTION
+options(crayon.enabled = FALSE)
+options(stringsAsFactors=FALSE)
+
+# PLOSHING TICKERS IN MASTER 
+MASTER <- read_excel('./DATA/RAW/MASTER.xlsx')
+MASTER <- rename(MASTER, f_code = full_code)
+MASTER <- data.frame(MASTER[,-1])
+
+# PLOSHING TICKERS IN MASTER
+NAVER_IDST <- read_excel('./DATA/RAW/NAVER_INDUSTRY.xlsx', sheet='STOCK')
+NAVER_IDST <- data.frame(NAVER_IDST[-1])
+NAVER_IDST <- rename(NAVER_IDST, s_code = X1)
+
+# POLISHING INDEX
+INDEX_ALL <- read.csv('./DATA/RAW/INDEX.csv')
+colnames(INDEX_ALL) <- c('date', 'KOSDAQ', 'KOSPI')
+INDEX_ALL[['date']] <- as.Date(INDEX_ALL[['date']])
+INDEX_ALL <- arrange(INDEX_ALL, date)
+
+# PLOSHING KRX_DATA
+KRX_DATA_ALL <- read.csv('./DATA/RAW/KRX_DATA_ALL.csv')
+KRX_DATA_ALL <- rename(KRX_DATA_ALL, f_code = ticker)
+KRX_DATA_ALL <- left_join(KRX_DATA_ALL, MASTER, by = "f_code")
+KRX_DATA_ALL <- rename(KRX_DATA_ALL, s_code = short_code)
+KRX_DATA_ALL <- left_join(KRX_DATA_ALL, NAVER_IDST, by = "s_code")
+KRX_DATA_ALL <- rename(KRX_DATA_ALL, sector = X2)
+KRX_DATA_ALL <- rename(KRX_DATA_ALL, name = codeName)
+KRX_DATA_ALL[,"X0"] <- NULL
+KRX_DATA_ALL <- filter(KRX_DATA_ALL, vol_s!=0)
+KRX_DATA_ALL <- rename(KRX_DATA_ALL, date = X)
+KRX_DATA_ALL[,'date'] <- as.Date(KRX_DATA_ALL[,'date'])
+KRX_DATA_ALL[,'cap_mil'] <- KRX_DATA_ALL[,'cap_mil'] * 1000000
+
+# PICK BIO FROM KRX_DATA
+KRX_DATA_BIO <- filter(KRX_DATA_ALL, sector == "제약" | sector == "생물공학")
+
+# SPLIT BY NAME
+KRX_DATA_BIO_bycode <- split(KRX_DATA_BIO, KRX_DATA_BIO[,'name'])
+
+
+# -- PAGE 1 TOP -- #
+
+# Total cap_mil
+sum_cap_mil_last <-sum(sapply(KRX_DATA_BIO_bycode, function(x){
+  x[1,][,c('cap_mil')]
+}))/10000000
+sum_cap_mil_last_text <- format(sum_cap_mil_last,big.mark=",",scientific=FALSE)
+
+# Total vol_m
+sum_vol_m_last <-sum(sapply(KRX_DATA_BIO_bycode, function(x){
+  x[1,][,c('vol_m')]
+}))/1000000
+sum_vol_m_last_text <- format(sum_vol_m_last,big.mark=",",scientific=FALSE)
+
+# Total vol_m / cap_mil
+cap_vol <- (sum_vol_m_last/sum_cap_mil_last)*100
+cap_vol <- round(cap_vol, digits = 2)
+cap_vol_text <- paste0(cap_vol,'%')
+
+# Total count
+total_count <- length(KRX_DATA_BIO_bycode)
+
+
+# -- PAGE 1 MID LEFT -- # 
+
+# KOSPI, KOSDAQ NMLZTION
+INDEX_ALL_NML<-data.frame(date=INDEX_ALL[["date"]])
+INDEX_ALL_NML[["KOSDAQ"]] <- INDEX_ALL[["KOSDAQ"]]/INDEX_ALL[["KOSDAQ"]][[1]]
+INDEX_ALL_NML[["KOSPI"]] <- INDEX_ALL[["KOSPI"]]/INDEX_ALL[["KOSPI"]][[1]]
+INDEX_ALL_NML <- xts(INDEX_ALL_NML[,-1], order.by = INDEX_ALL_NML[,1])
+
+# BIO Cap NMLZTION
+KRX_DATA_BIO_cap_term <- data.frame(group_by(KRX_DATA_BIO, date) %>% summarise(sum(cap_mil))) %>% filter(date >= '2017-11-01' & date <= '2018-03-30')
+KRX_DATA_BIO_cap_term <- rename(KRX_DATA_BIO_cap_term, KRX_BIO=sum.cap_mil.)
+KRX_DATA_BIO_cap_term_NML <- mutate(KRX_DATA_BIO_cap_term, KRX_BIO.N = KRX_DATA_BIO_cap_term[['KRX_BIO']]/KRX_DATA_BIO_cap_term[['KRX_BIO']][[1]])[,c(1,3)]
+KRX_DATA_BIO_cap_term <- xts(KRX_DATA_BIO_cap_term[,-1], order.by = KRX_DATA_BIO_cap_term[,1])
+KRX_DATA_BIO_cap_term_NML <- xts(KRX_DATA_BIO_cap_term_NML[,-1], order.by = KRX_DATA_BIO_cap_term_NML[,1])
+names(KRX_DATA_BIO_cap_term) <- 'KRX_BIO'
+names(KRX_DATA_BIO_cap_term_NML) <- 'KRX_BIO.n'
+
+# MERGE
+MERGE.INDEX_BIO <- merge(INDEX_ALL_NML, KRX_DATA_BIO_cap_term_NML)-1
+
+  # dygraph(MERGE.INDEX_BIO) %>%
+  #   dyOptions(colors = RColorBrewer::brewer.pal(3, "BuGn")) %>%
+  #   dyOptions(fillGraph = TRUE, fillAlpha = 0.35) %>%
+  #   dyAxis("x", drawGrid = FALSE) %>%
+  #   dyAxis("y", label = "Cumulative Return (Point)", axisLineColor="white",drawGrid = FALSE, axisLabelFormatter = 'function(d){ return d.toFixed(2)  }') %>%
+  #   dySeries('KOSDAQ', label = "코스닥", strokeWidth = 1) %>%
+  #   dySeries('KOSPI', label = "코스피", strokeWidth = 1, drawPoints = FALSE, pointSize = 2) %>%
+  #   dySeries('KRX_BIO.n', label = "바이오", strokeWidth = 1)
+
+
+# -- PAGE 1 MID RIGHT -- #
+
+# biggest Cap_mil
+cap_mil_lastday <- data.frame(group_by(KRX_DATA_BIO, name) %>% summarise(M.CAP = cap_mil[[1]], TRD.VOL = vol_m[[1]], TV_MK = vol_m[[1]]/cap_mil[[1]]))
+cap_mil_lastday['M.CAP'] <- round(cap_mil_lastday['M.CAP'] / 1000000000, digits=0)
+cap_mil_lastday['TRD.VOL'] <- round(cap_mil_lastday['TRD.VOL'] / 1000000, digits=0)
+cap_mil_lastday['TV_MK'] <- round(cap_mil_lastday['TV_MK']*100, digits = 2)
+cap_mil_lastday <- arrange(cap_mil_lastday, -M.CAP)
+cap_mil_lastday['M.CAP'] <- format(cap_mil_lastday['M.CAP'], nsmall=0)
+cap_mil_lastday['TRD.VOL'] <- format(cap_mil_lastday['TRD.VOL'], nsmall=0)
+cap_mil_lastday <- rename(cap_mil_lastday, NAME=name)
+
+# -- PAGE 1 BOTTOM LEFT -- #
+top7_cap <- (KRX_DATA_BIO %>% group_by(name) %>% summarise(mean_cap = mean(cap_mil)) )
+top7_cap <- arrange(top7_cap, -mean_cap)
+top7_cap <- as.data.frame(top7_cap)
+top7_cap <- top7_cap[[1]][1:7]
+
+term_chart <- function(arg.){
+  k_bio_term <- filter(KRX_DATA_BIO, date >= '2017-11-01' & date <= '2018-03-30')
+  k <- split(filter(k_bio_term, name %in% top7_cap), filter(k_bio_term, name %in% top7_cap)[,"name"])
+  k_xts <- lapply(k,function(x){
+    xts(x[c('date',arg.)][,-1], order.by = x[c('date',arg.)][,1])
+  })
+  k_bind <- do.call(cbind,k_xts)
+  return(k_bind)
+}
+
+  # dygraph(term_chart('vol_m')/1000000) %>%
+  #   dyOptions(colors = RColorBrewer::brewer.pal(7, "GnBu")) %>%
+  #   dyOptions(fillGraph = TRUE, fillAlpha = 0.5) %>%
+  #   dyAxis("x", drawGrid = FALSE) %>%
+  #   dyAxis("y", axisLineColor="white",drawGrid = FALSE, axisLabelFormatter = 'function(d){ return d.toFixed(0)  }') %>%
+  #   dyLegend(width = 500)
+
+
+# -- PAGE 1 BOTTOM RIGHT -- #
+
+# Average Trading Volume Trend
+KRX_BIO_Avr.VOL <- data.frame(group_by(KRX_DATA_BIO, date) %>% summarise(Avr.VOL = mean(vol_m)/1000000))
+KRX_BIO_Avr.VOL['Avr.VOL'] <- round(KRX_BIO_Avr.VOL['Avr.VOL'], digits=0)
+KRX_BIO_Avr.VOL <- xts(KRX_BIO_Avr.VOL[,-1], order.by = KRX_BIO_Avr.VOL[,1])
+KRX_BIO_Avr.VOL_byWeek_title <- list()
+KRX_BIO_Avr.VOL_byWeek_title <- unlist(as.Date(sapply(split(KRX_BIO_Avr.VOL, 'weeks'), function(x){
+  index(x)[[1]]
+})))
+KRX_BIO_Avr.VOL_byWeek_mean <- list()
+KRX_BIO_Avr.VOL_byWeek_mean <- unlist(sapply(split(KRX_BIO_Avr.VOL, 'weeks'), function(x){
+  mean(x)
+}))
+KRX_BIO_Avr.VOL_byWeek <- data.frame(date = KRX_BIO_Avr.VOL_byWeek_title, Avr.VOL = KRX_BIO_Avr.VOL_byWeek_mean)
+
+# Average Market Cap Trend 
+KRX_BIO_M.CAP <- data.frame(group_by(KRX_DATA_BIO, date) %>% summarise(M.CAP = mean(cap_mil)/100000000))
+KRX_BIO_M.CAP['M.CAP'] <- round(KRX_BIO_M.CAP['M.CAP'], digits=0)
+KRX_BIO_M.CAP <- xts(KRX_BIO_M.CAP[,-1], order.by = KRX_BIO_M.CAP[,1])
+
+KRX_BIO_M.CAP_byWeek_title <- list()
+KRX_BIO_M.CAP_byWeek_title <- unlist(as.Date(sapply(split(KRX_BIO_M.CAP, 'weeks'), function(x){
+  index(x)[[1]]
+})))
+
+KRX_BIO_M.CAP_byWeek_mean <- list()
+KRX_BIO_M.CAP_byWeek_mean <- unlist(sapply(split(KRX_BIO_M.CAP, 'weeks'), function(x){
+  mean(x)
+}))
+
+KRX_BIO_M.CAP_byWeek <- data.frame(date = KRX_BIO_M.CAP_byWeek_title, M.CAP = KRX_BIO_M.CAP_byWeek_mean)
+KRX_BIO_Avr.VOL_M.CAP_byWeek <- left_join(KRX_BIO_Avr.VOL_byWeek, KRX_BIO_M.CAP_byWeek)
+
+  # ggplotly(
+  # ggplot(KRX_BIO_Avr.VOL_M.CAP_byWeek, aes(x=date, y=Avr.VOL)) +
+  #   geom_bar(stat="identity", fill="#1ab394", alpha=0.4) +
+  #   labs(title="Trading Volume(Aver.) Trend", 
+  #        subtitle="Average Trading Volume of BIO Sector in KRX MARKET", 
+  #        caption="Source: EBEST API & WEB DATA CRAWLING") +
+  #   theme(axis.title.x=element_blank(), axis.title.y=element_blank()) +
+  #   scale_x_date(date_labels = "%Y%m%d") +
+  #   geom_line(aes(x=date, y=M.CAP),stat="identity", size=1, linetype = "twodash", color="skyblue", position = 'jitter') +
+  #   scale_y_continuous(sec.axis = sec_axis(~.))
+  # )
+
+
+# -- PAGE 1 BOTTOM RIGHT - 2 -- #
+
+#ATR & WPR FUNCTION
+KRX_DATA_BIO_ATR_WPR_bycode <- list()
+for ( i in cap_mil_lastday[,'NAME'][1:10]){
+  KRX_DATA_BIO_ATR_WPR_bycode[[ i ]] <- filter( KRX_DATA_BIO, name == i ) %>% arrange(date)
+  KRX_DATA_BIO_ATR_WPR_bycode[[ i ]] <- mutate( KRX_DATA_BIO_ATR_WPR_bycode[[ i ]], ATR = ATR( KRX_DATA_BIO_ATR_WPR_bycode[[ i ]][,c("high","low","close")] , n=3)[,c('atr')])
+  KRX_DATA_BIO_ATR_WPR_bycode[[ i ]] <- mutate( KRX_DATA_BIO_ATR_WPR_bycode[[ i ]], A.Ratio = (KRX_DATA_BIO_ATR_WPR_bycode[[ i ]][[ 'ATR' ]] / KRX_DATA_BIO_ATR_WPR_bycode[[ i ]][[ "close" ]]) )
+  KRX_DATA_BIO_ATR_WPR_bycode[[ i ]] <- mutate( KRX_DATA_BIO_ATR_WPR_bycode[[ i ]], WPR = WPR( KRX_DATA_BIO_ATR_WPR_bycode[[ i ]][,c("high","low","close")] , n=5))
+}
+
+KRX_DATA_BIO_ATR_WPR_bycode_lastday <- do.call(rbind,lapply(KRX_DATA_BIO_ATR_WPR_bycode, function(x){
+  x[nrow(x),]
+}))
+rownames(KRX_DATA_BIO_ATR_WPR_bycode_lastday) <- NULL
+KRX_DATA_BIO_ATR_WPR_bycode_lastday <- KRX_DATA_BIO_ATR_WPR_bycode_lastday[c('name','close','sector','ATR','A.Ratio','WPR')]
+KRX_DATA_BIO_ATR_WPR_bycode_lastday['ATR'] <- round(KRX_DATA_BIO_ATR_WPR_bycode_lastday['ATR'], digits=0)
+KRX_DATA_BIO_ATR_WPR_bycode_lastday['A.Ratio'] <- sapply(round(KRX_DATA_BIO_ATR_WPR_bycode_lastday['A.Ratio']*100, digits=2), function(x){
+  paste0(x,'%')
+})
+KRX_DATA_BIO_ATR_WPR_bycode_lastday['WPR'] <- round(KRX_DATA_BIO_ATR_WPR_bycode_lastday['WPR'], digits=2)
+KRX_DATA_BIO_ATR_WPR_bycode_lastday <- KRX_DATA_BIO_ATR_WPR_bycode_lastday[,c(1,3,2,4,5,6)]
+
+kable(KRX_DATA_BIO_ATR_WPR_bycode_lastday) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width = T)
+
+
+# dygraph(term_chart('close'))
+# dygraph(term_chart('vol_m'))
+# dygraph(term_chart('vol_s'))
+# dygraph(term_chart('cap_mil'))
+
+# 
+# #STOCK PRICE CHART
+# k <- KRX_DATA_BIO_bycode[[1]][,c(1:9)]
+# k_xts <- xts(k[,-1], order.by = k[,1])[,1] 
+# 
+# KRX_DATA_BIO_bycode[1]
+
+
+# # -- PAGE 1 BOTOOM RIGHT -- #
+# 
+# kable(dt) %>%
+#   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width = T)
+# 
+# head(KRX_DATA_BIO)
+# kable_styling(a, bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width = T)
+
 ```
 
 
-Page 1 {data-orientation=rows}
+OVERVIEW {data-orientation=rows}
 ===================================== 
 
 Column {.sidebar}
 -----------------------------------------------------------------------
-
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
 Waiting time between eruptions and the duration of the eruption for the
 Old Faithful geyser in Yellowstone National Park, Wyoming, USA.
 
 ```{r}
 # selectInput("n_breaks", label = "Number of bins:",
 #             choices = c(10, 20, 35, 50), selected = 20)
-# 
+#
 # sliderInput("bw_adjust", label = "Bandwidth adjustment:",
 #             min = 0.2, max = 2, value = 1, step = 0.2)
 ```
 
-Row {data-height=300}
+Row {data-height=140, class="page_1_top"}
 -------------------------------------
-    
-### Linked Value Box
-    
-```{r}
-renderValueBox({
-  valueBox(sum_cap_mil_last, 
-           icon = "fa-trash",
-           color = ifelse(sum_cap_mil_last > 10, "warning", "primary"))
-})
-```
 
-### Chart 2
+
+
+### Market Capitalization {data-height=140}
+<span class="label_1 bg_green fc_white">Daily</span>
+<div class="top_c_1">
+```{r}
+renderText(sum_cap_mil_last_text)
+```
+  <p class="sub_c_1">Total MK (18/04/30)</p>
+  <span class= "sub_per_1 fc_green">
+    32%
+    <i class="fa fa-bolt fa_1"></i>
+  </span>
+</div>
+
+
+
+### Trading Volume {data-height=140}
+<span class="label_1 bg_green fc_white">Daily</span>
+<div class="top_c_1">
+```{r}
+renderText(sum_vol_m_last_text)
+```
+  <p class="sub_c_1">Total TV (18/04/30)</p>
+  <span class= "sub_per_1 fc_green">
+    21%
+    <i class="fas fa-level-up-alt fa_1"></i>
+  </span>
+</div>
+
     
+### MC/TV Ratio {data-height=140}
+<span class="label_1 bg_amer fc_white">Monthly</span>
+<div class="top_c_1">
 ```{r}
+renderText(cap_vol_text)
 ```
-    
-### Chart 3
+  <p class="sub_c_1">MC per TV</p>
+  <span class= "sub_per_1 fc_amer">
+    16%
+    <i class="fas fa-level-up-alt fa_1"></i>
+  </span>
+</div>
 
+
+### Total Count {data-height=140}
+<span class="label_1 bg_skyblue fc_white">Quarterly</span>
+<div class="top_c_1">
 ```{r}
+renderText(total_count)
 ```
+  <p class="sub_c_1">All Bio stocks</p>
+  <span class= "sub_per_1 fc_skyblue">
+    10%
+    <i class="fas fa-level-down-alt fa_1"></i>
+  </span>
+</div>
 
-### Chart 4
 
-```{r}
-```
-   
+
+
 Row
 -------------------------------------
 
-### Chart 5
+### BIO Market CAP and KRX chart {data-width=75%}
 
 ```{r}
-dygraph(term_chart('close'))
+dygraph(MERGE.INDEX_BIO) %>%
+  dyOptions(colors = RColorBrewer::brewer.pal(3, "BuGn")) %>%
+  dyOptions(fillGraph = TRUE, fillAlpha = 0.35) %>%
+  dyAxis("x", drawGrid = FALSE) %>%
+  dyAxis("y", label = "Cumulative Return (Point)", axisLineColor="white",drawGrid = FALSE, axisLabelFormatter = 'function(d){ return d.toFixed(2)  }') %>%
+  dySeries('KOSDAQ', label = "코스닥", strokeWidth = 1) %>%
+  dySeries('KOSPI', label = "코스피", strokeWidth = 1, drawPoints = FALSE, pointSize = 2) %>%
+  dySeries('KRX_BIO.n', label = "바이오", strokeWidth = 1)
 ```
+
+
+### TOP TIER  {data-width=25%}
+<div class="mid_c_1">
+```{r}
+renderTable(cap_mil_lastday[c(1:9),])
+```
+</div>
+<div class="mid_fa_1">
+<i class="fas fa-caret-up fa_mid_1 fc_red"></i>
+<i class="fas fa-caret-up fa_mid_1 fc_red"></i>
+<i class="fas fa-caret-up fa_mid_1 fc_red"></i>
+<i class="fas fa-caret-down fa_mid_1 fc_skyblue"></i>
+<i class="fas fa-caret-up fa_mid_1 fc_red"></i>
+<i class="fas fa-caret-up fa_mid_1 fc_red"></i>
+<i class="fas fa-caret-up fa_mid_1 fc_red"></i>
+<i class="fas fa-caret-down fa_mid_1 fc_skyblue"></i>
+<i class="fas fa-caret-down fa_mid_1 fc_skyblue"></i>
+</div>
+
 
 Row
 -------------------------------------
     
-### Chart 6
+### 
     
 ```{r}
+dygraph(term_chart('vol_m')/1000000) %>%
+    dyOptions(colors = RColorBrewer::brewer.pal(7, "GnBu")) %>%
+    dyOptions(fillGraph = TRUE, fillAlpha = 0.5) %>%
+    dyAxis("x", drawGrid = FALSE) %>%
+    dyAxis("y", axisLineColor="white",drawGrid = FALSE, axisLabelFormatter = 'function(d){ return d.toFixed(0)  }') %>%
+    dyLegend(width = 500)
 ```
 
-### Chart 7
+### Trading Volume & Market CAP Trend (Aver.)
     
 ```{r}
+ggplotly(
+ggplot(KRX_BIO_Avr.VOL_M.CAP_byWeek, aes(x=date, y=Avr.VOL)) +
+  geom_bar(stat="identity", fill="#1ab394", alpha=0.4) +
+  labs(title="Trading Volume(Aver.) & M.Cap Trend", 
+       subtitle="Average Trading Volume of BIO Sector in KRX MARKET", 
+       caption="Source: EBEST API & WEB DATA CRAWLING") +
+  theme(axis.title.x=element_blank(), axis.title.y=element_blank()) +
+  scale_x_date(date_labels = "%Y%m%d") +
+  geom_line(aes(x=date, y=M.CAP),stat="identity", size=1, linetype = "twodash", color="skyblue", position = 'jitter') +
+  scale_y_continuous(sec.axis = sec_axis(~.))
+)
 ```
     
-### Chart 8
+### TOP TIER INFO
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto; padding: 0px;">
+<thead class="tableFloatingHeaderOriginal" style="position: static; margin-top: 0px; left: 1375px; z-index: 3; width: 511px; top: 627.156px;">
+<tr>
+<th style="text-align: left; min-width: 0px; max-width: none;">
+name
+</th>
+<th style="text-align: left; min-width: 0px; max-width: none;">
+sector
+</th>
+<th style="text-align: center; min-width: 0px; max-width: none;">
+close
+</th>
+<th style="text-align: center; min-width: 0px; max-width: none;">
+ATR
+</th>
+<th style="text-align: center; min-width: 0px; max-width: none;">
+A.Ratio
+</th>
+<th style="text-align: center; min-width: 0px; max-width: none;">
+WPR
+</th>
+</tr>
+</thead><thead class="tableFloatingHeader" style="opacity: 0; display: none;">
+<tr>
+<th style="text-align:left;">
+name
+</th>
+<th style="text-align:left;">
+sector
+</th>
+<th style="text-align:center;">
+close
+</th>
+<th style="text-align:center;">
+ATR
+</th>
+<th style="text-align:center;">
+A.Ratio
+</th>
+<th style="text-align:center;">
+WPR
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+셀트리온 <span class="label_1_bt bg_yello fc_white">수급</span>
+</td>
+<td style="text-align:left;">
+제약 <i class="fas fa-capsules fa_1_bt"></i>
+</td>
+<td style="text-align:center;">
+271000
+</td>
+<td style="text-align:center;">
+15150
+</td>
+<td style="text-align:center;">
+5.59%
+</td>
+<td style="text-align:center;">
+0.28
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+삼성바이오로직스 
+</td>
+<td style="text-align:left;">
+제약 <i class="fas fa-capsules fa_1_bt"></i>
+</td>
+<td style="text-align:center;">
+488000
+</td>
+<td style="text-align:center;">
+22449
+</td>
+<td style="text-align:center;">
+4.6%
+</td>
+<td style="text-align:center;">
+0.34
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+셀트리온헬스케어
+</td>
+<td style="text-align:left;">
+제약 <i class="fas fa-prescription-bottle-alt fa_1_bt"></i>
+</td>
+<td style="text-align:center;">
+89800
+</td>
+<td style="text-align:center;">
+4525
+</td>
+<td style="text-align:center;">
+5.04%
+</td>
+<td style="text-align:center;">
+0.30
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+신라젠 <span class="label_1_bt bg_pink fc_white">급등</span>
+</td>
+<td style="text-align:left;">
+생물공학 <i class="fas fa-vial fa_1_bt"></i>
+</td>
+<td style="text-align:center;">
+84100
+</td>
+<td style="text-align:center;">
+5149
+</td>
+<td style="text-align:center;">
+6.12%
+</td>
+<td style="text-align:center;">
+0.55
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+한미약품 <span class="label_1_bt bg_pink fc_white">급등</span>
+</td>
+<td style="text-align:left;">
+제약 <i class="fas fa-capsules fa_1_bt"></i>
+</td>
+<td style="text-align:center;">
+466000
+</td>
+<td style="text-align:center;">
+17688
+</td>
+<td style="text-align:center;">
+3.8%
+</td>
+<td style="text-align:center;">
+0.54
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+한미사이언스 <span class="label_1_bt bg_amer fc_white">세력</span>
+</td>
+<td style="text-align:left;">
+제약 <i class="fas fa-prescription-bottle-alt fa_1_bt"></i>
+</td>
+<td style="text-align:center;">
+77800
+</td>
+<td style="text-align:center;">
+2743
+</td>
+<td style="text-align:center;">
+3.53%
+</td>
+<td style="text-align:center;">
+0.93
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+메디톡스 
+</td>
+<td style="text-align:left;">
+생물공학 <i class="fas fa-prescription fa_1_bt"></i>
+</td>
+<td style="text-align:center;">
+697600
+</td>
+<td style="text-align:center;">
+27363
+</td>
+<td style="text-align:center;">
+3.92%
+</td>
+<td style="text-align:center;">
+0.17
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+바이로메드
+</td>
+<td style="text-align:left;">
+생물공학 <i class="fas fa-vial fa_1_bt"></i>
+</td>
+<td style="text-align:center;">
+216500
+</td>
+<td style="text-align:center;">
+8271
+</td>
+<td style="text-align:center;">
+3.82%
+</td>
+<td style="text-align:center;">
+0.35
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+셀트리온제약 <span class="label_1_bt bg_yello fc_white">수급</span>
+</td>
+<td style="text-align:left;">
+제약 <i class="fas fa-capsules fa_1_bt"></i>
+</td>
+<td style="text-align:center;">
+86900
+</td>
+<td style="text-align:center;">
+4977
+</td>
+<td style="text-align:center;">
+5.73%
+</td>
+<td style="text-align:center;">
+0.74
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+유한양행
+</td>
+<td style="text-align:left;">
+제약 <i class="fas fa-capsules fa_1_bt"></i>
+</td>
+<td style="text-align:center;">
+229000
+</td>
+<td style="text-align:center;">
+8440
+</td>
+<td style="text-align:center;">
+3.69%
+</td>
+<td style="text-align:center;">
+0.73
+</td>
+</tr>
+</tbody>
+</table>
 
-```{r}
-```
-
-Page 2 {data-orientation=column}
+DETAILS {data-orientation=column}
 ===================================== 
 
 Column {.sidebar}
