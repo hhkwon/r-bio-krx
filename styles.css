@@ -119,3 +119,17 @@
 	float:right;
 	margin-top:2px;
 }
+
+/* PAGE2 */
+
+.page_2_top_wrap > div {
+    background: none;
+}
+
+.page_2_top_wrap > .dygraph-axis-label, .dygraph-axis-label-x, .dygraph-axis-label-y{
+    display: none;
+}
+
+.page_2_top_wrap > .dygraphs, .html-widget, .html-widget-static-bound {
+    margin-left: -30px;
+}

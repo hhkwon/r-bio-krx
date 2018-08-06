@@ -246,6 +246,68 @@ kable(KRX_DATA_BIO_ATR_WPR_bycode_lastday, align=c('l','l','c','c','c','c')) %>%
 # head(KRX_DATA_BIO)
 # kable_styling(a, bootstrap_options = c("striped", "hover", "condensed", "responsive"), full_width = T)
 
+
+
+# ------ Page2 ------ #
+
+# Mar_CAP & Graph
+page_2_m.c<- KRX_DATA_BIO_ATR_WPR_bycode[['셀트리온']][nrow(KRX_DATA_BIO_ATR_WPR_bycode[['셀트리온']]),][['cap_mil']]/10000000
+format(page_2_m.c,big.mark=",",scientific=FALSE)
+
+page_2_m.c <- KRX_DATA_BIO_ATR_WPR_bycode[['셀트리온']][c('date','cap_mil')]
+page_2_m.c['cap_mil'] <- page_2_m.c['cap_mil']/1000000
+page_2_m.c_xts <- xts(page_2_m.c[,-1], order.by = page_2_m.c[,1])
+names(page_2_m.c_xts) <- 'M.CAP'
+
+dygraph(split(page_2_m.c_xts, 'months')[[5]][1:5]) %>%
+  dyLegend(show = "never") %>%
+  dyAxis("x", drawGrid = FALSE, axisLineColor='#f2f2f2') %>%
+  dyAxis("y", drawGrid = FALSE, axisLineColor='#f2f2f2') %>%
+  dySeries('M.CAP', strokeWidth = 1, drawPoints = TRUE, pointSize = 3)
+
+  #Last
+  page_2_m.c_last <- format(page_2_m.c[['cap_mil']][nrow(page_2_m.c)], big.mark=",", scientific=FALSE)
+
+  #MAX
+  page_2_m.c_max <- format(max(page_2_m.c[['cap_mil']]), big.mark=",", scientific=FALSE)
+
+  #ARV.
+  page_2_m.c_avr <- format(mean(page_2_m.c[['cap_mil']]), big.mark=",", scientific=FALSE)
+  
+  #MIN
+  page_2_m.c_min <- format(min(page_2_m.c[['cap_mil']]), big.mark=",", scientific=FALSE)
+  
+# Trading Volumes & Graph
+
+page_2_t.v <- KRX_DATA_BIO_ATR_WPR_bycode[['셀트리온']][c('date','vol_m')]
+page_2_t.v['vol_m'] <- page_2_t.v['vol_m']/1000000
+page_2_t.v_xts <- xts(page_2_t.v[,-1], order.by = page_2_t.v[,1])
+names(page_2_t.v_xts) <- 'T.VOL'
+
+dygraph(split(page_2_t.v_xts, 'months')[[5]][1:5]) %>%
+  dyLegend(show = "never") %>%
+  dyAxis("x", drawGrid = FALSE, axisLineColor='#f2f2f2') %>%
+  dyAxis("y", drawGrid = FALSE, axisLineColor='#f2f2f2') %>%
+  dySeries('T.VOL', strokeWidth = 1, drawPoints = TRUE, pointSize = 3)
+
+  #Last
+  page_2_t.v_last <- format(page_2_t.v[['vol_m']][nrow(page_2_m.c)], big.mark=",", scientific=FALSE)
+
+  #MAX
+  page_2_t.v_max <- format(max(page_2_t.v[['vol_m']]), big.mark=",", scientific=FALSE)
+
+  #ARV.
+  page_2_t.v_avr <- format(mean(page_2_t.v[['vol_m']]), big.mark=",", scientific=FALSE)
+  
+  #MIN
+  page_2_t.v_min <- format(min(page_2_t.v[['vol_m']]), big.mark=",", scientific=FALSE)
+
+
+# ATR & WPR
+
+# Price & TV Chart
+
+
 ```
 
 
@@ -702,7 +764,8 @@ WPR
 </tbody>
 </table>
 
-DETAILS {data-orientation=column}
+
+DETAILS {data-orientation=rows}
 ===================================== 
 
 Column {.sidebar}
@@ -719,29 +782,35 @@ Old Faithful geyser in Yellowstone National Park, Wyoming, USA.
 #             min = 0.2, max = 2, value = 1, step = 0.2)
 ```
 
-Row
+Row {data-height=500px, class='page_2_top_wrap'}
 -------------------------------------
     
-### Chart 1
-    
+###
 ```{r}
+dygraph(split(page_2_m.c_xts, 'months')[[5]][1:5]) %>%
+  dyLegend(show = "never") %>%
+  dyAxis("x", drawGrid = FALSE, axisLineColor='#f2f2f2') %>%
+  dyAxis("y", drawGrid = FALSE, axisLineColor='#f2f2f2') %>%
+  dySeries('M.CAP', strokeWidth = 1, drawPoints = TRUE, pointSize = 2)
 ```
 
 ### Chart 2
-    
-```{r}
+
+```{r} 
+renderText(c(page_2_m.c_last, page_2_m.c_max))
 ```
     
 ### Chart 3
-
+<div class="ayou">
 ```{r}
+renderText(page_2_m.c_last)
+```
+</div>
+```{r}
+renderText(page_2_m.c_max)
 ```
 
-### Chart 4
 
-```{r}
-```
-   
 Row
 -------------------------------------
 
@@ -755,15 +824,5 @@ Row
     
 ### Chart 6
     
-```{r}
-```
-
-### Chart 7
-    
-```{r}
-```
-    
-### Chart 8
-
 ```{r}
 ```
