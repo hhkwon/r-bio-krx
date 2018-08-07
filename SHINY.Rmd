@@ -251,9 +251,6 @@ kable(KRX_DATA_BIO_ATR_WPR_bycode_lastday, align=c('l','l','c','c','c','c')) %>%
 # ------ Page2 ------ #
 
 # Mar_CAP & Graph
-page_2_m.c<- KRX_DATA_BIO_ATR_WPR_bycode[['셀트리온']][nrow(KRX_DATA_BIO_ATR_WPR_bycode[['셀트리온']]),][['cap_mil']]/10000000
-format(page_2_m.c,big.mark=",",scientific=FALSE)
-
 page_2_m.c <- KRX_DATA_BIO_ATR_WPR_bycode[['셀트리온']][c('date','cap_mil')]
 page_2_m.c['cap_mil'] <- page_2_m.c['cap_mil']/1000000
 page_2_m.c_xts <- xts(page_2_m.c[,-1], order.by = page_2_m.c[,1])
@@ -306,8 +303,17 @@ dygraph(split(page_2_t.v_xts, 'months')[[5]][1:5]) %>%
 # ATR & WPR
 
 # Price & TV Chart
+p_tv_chart <- KRX_DATA_BIO_ATR_WPR_bycode[['셀트리온']][c('date','close','vol_m')]
+p_tv_chart['vol_m'] <- p_tv_chart['vol_m']/1000000
+p_tv_chart_xts <- xts(p_tv_chart[,-1], order.by = p_tv_chart[,1])
 
-
+dygraph(p_tv_chart_xts) %>%
+  dyOptions(colors = RColorBrewer::brewer.pal(4, "GnBu")) %>%
+  dyOptions(fillGraph = TRUE, fillAlpha = 0.3) %>%
+  dyAxis("x", drawGrid = FALSE, axisLineColor='#f2f2f2') %>%
+  dyAxis("y", drawGrid = FALSE, axisLineColor='#f2f2f2') %>%
+  dySeries('close', label = "종가", strokeWidth = 1) %>%
+  dySeries('vol_m', label = "거래대금", strokeWidth = 1)
 ```
 
 
@@ -782,7 +788,36 @@ Old Faithful geyser in Yellowstone National Park, Wyoming, USA.
 #             min = 0.2, max = 2, value = 1, step = 0.2)
 ```
 
-Row {data-height=500px, class='page_2_top_wrap'}
+
+Row {data-height=90px, class='page_2_top_wrap'}
+-------------------------------------
+
+### {class='fuck'}
+<div class="page_2_top_title">
+```{r}
+renderText(page_2_m.c_last)
+```
+<span class="page_2_top_title_sub">Market capitalization (18/04/30)</span>
+</div>
+
+###
+<div class="page_2_top_title">
+```{r}
+renderText(page_2_t.v_last)
+```
+<span class="page_2_top_title_sub">Trading Volume (18/04/30)</span>
+</div>
+
+###
+<div class="ayou">
+```{r}
+renderText(page_2_t.v_last)
+```
+</div>
+    
+    
+
+Row {data-height=120px, class='page_2_top_wrap'}
 -------------------------------------
     
 ###
@@ -791,38 +826,114 @@ dygraph(split(page_2_m.c_xts, 'months')[[5]][1:5]) %>%
   dyLegend(show = "never") %>%
   dyAxis("x", drawGrid = FALSE, axisLineColor='#f2f2f2') %>%
   dyAxis("y", drawGrid = FALSE, axisLineColor='#f2f2f2') %>%
-  dySeries('M.CAP', strokeWidth = 1, drawPoints = TRUE, pointSize = 2)
+  dySeries('M.CAP', strokeWidth = 1, drawPoints = TRUE, pointSize = 3)
 ```
 
-### Chart 2
-
+###
 ```{r} 
-renderText(c(page_2_m.c_last, page_2_m.c_max))
+dygraph(split(page_2_t.v_xts, 'months')[[5]][1:5]) %>%
+  dyLegend(show = "never") %>%
+  dyAxis("x", drawGrid = FALSE, axisLineColor='#f2f2f2') %>%
+  dyAxis("y", drawGrid = FALSE, axisLineColor='#f2f2f2') %>%
+  dySeries('T.VOL', strokeWidth = 1, drawPoints = TRUE, pointSize = 3)
 ```
+
+###
+```{r} 
+dygraph(split(page_2_t.v_xts, 'months')[[5]][1:5]) %>%
+  dyLegend(show = "never") %>%
+  dyAxis("x", drawGrid = FALSE, axisLineColor='#f2f2f2') %>%
+  dyAxis("y", drawGrid = FALSE, axisLineColor='#f2f2f2') %>%
+  dySeries('T.VOL', strokeWidth = 1, drawPoints = TRUE, pointSize = 3)
+```
+
+
+Row {data-height=80px, class='page_2_top_wrap'}
+-------------------------------------
     
-### Chart 3
-<div class="ayou">
-```{r}
-renderText(page_2_m.c_last)
-```
-</div>
+### {class=''}
+
+<div class ='page_2_mid_max'>
+<span class="page_2_mid_title_sub">Max M.CAP during Term</span>
 ```{r}
 renderText(page_2_m.c_max)
 ```
+</div>
 
-
-Row
--------------------------------------
-
-### Chart 5
-
+<div class ='page_2_mid_avr'>
+<span class="page_2_mid_title_sub">Avr M.CAP during Term</span>
 ```{r}
+renderText(page_2_m.c_avr)
+```
+</div>
+
+<div class ='page_2_mid_min'>
+<span class="page_2_mid_title_sub">Min M.CAP during Term</span>
+```{r}
+renderText(page_2_m.c_min)
+```
+</div>
+
+
+###
+<div class ='page_2_mid_max'>
+<span class="page_2_mid_title_sub">Max T.VOL during Term</span>
+```{r}
+renderText(page_2_t.v_max)
+```
+</div>
+
+<div class ='page_2_mid_avr'>
+<span class="page_2_mid_title_sub">Avr T.VOL during Term</span>
+```{r}
+renderText(page_2_t.v_avr)
+```
+</div>
+
+<div class ='page_2_mid_min'>
+<span class="page_2_mid_title_sub">Min T.VOL during Term</span>
+```{r}
+renderText(page_2_t.v_min)
+```
+</div>
+
+
+
+###
+<div class="ayou">
+```{r}
+renderText(page_2_t.v_last)
+```
+</div>
+
+
+
+
+Column {class='page_2_chart_wrap'}
+-------------------------------------
+###
+```{r}
+dygraph(p_tv_chart_xts) %>%
+  dyOptions(colors = RColorBrewer::brewer.pal(4, "GnBu")) %>%
+  dyLegend(show = "never") %>%
+  dyOptions(fillGraph = TRUE, fillAlpha = 0.3) %>%
+  dyAxis("x", drawGrid = FALSE, axisLineColor='#f2f2f2') %>%
+  dyAxis("y", drawGrid = FALSE, axisLineColor='#f2f2f2', axisLabelFormatter = 'function(d){ return d }') %>%
+  dySeries('close', label = "종가", strokeWidth = 1) %>%
+  dySeries('vol_m', label = "거래대금", strokeWidth = 1)
 ```
 
-Row
+
+
+Column {data-height=600px}
 -------------------------------------
-    
-### Chart 6
-    
+###
+<div class="">
 ```{r}
 ```
+</div>
+
+     
+     
+     
+     
