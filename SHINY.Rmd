@@ -349,16 +349,20 @@ OVERVIEW {data-orientation=rows}
 Column {.sidebar}
 -----------------------------------------------------------------------
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
-Waiting time between eruptions and the duration of the eruption for the
-Old Faithful geyser in Yellowstone National Park, Wyoming, USA.
-
-```{r}
-# selectInput("n_breaks", label = "Number of bins:",
-#             choices = c(10, 20, 35, 50), selected = 20)
-#
-# sliderInput("bw_adjust", label = "Bandwidth adjustment:",
-#             min = 0.2, max = 2, value = 1, step = 0.2)
-```
+<div class="page_2_sidemenu">
+  <div class="icons">
+  <i class="fas fa-prescription-bottle-alt"></i><i class="fas fa-bong"></i><i class="fas fa-pills"></i>
+  </div>
+  <div class="page_2_sidemenu_title">
+Biotechnology is the broad area of science involving living systems and organisms to develop or make products.
+  </div>
+  <div class="page_2_sidemenu_content">
+The wide concept of "biotech" or "biotechnology" encompasses a wide range of procedures for modifying living organisms according to human purposes, going back to domestication of animals, cultivation of the plants, and "improvements" to these through breeding programs that employ artificial selection and hybridization.
+  </div>
+  <div class="page_2_sidemenu_content">
+Pharmacogenomics (a combination of pharmacology and genomics) is the technology that analyses how genetic makeup affects an individual's response to drugs.[18] It deals with the influence of genetic variation on drug responses in patients by correlating gene expression or single-nucleotide polymorphisms with a drug's efficacy or toxicity.
+  </div>
+</div>
 
 Row {data-height=140}
 -------------------------------------
@@ -673,7 +677,7 @@ WPR
 </tr>
 <tr>
 <td style="text-align:left;">
-한미사이언스 <span class="label_1_bt bg_amer fc_white">세력</span>
+한미사이언스 <span class="label_1_bt bg_amer fc_white">안정</span>
 </td>
 <td style="text-align:left;">
 제약 <i class="fas fa-prescription-bottle-alt fa_1_bt"></i>
@@ -781,8 +785,18 @@ DETAILS {data-orientation=rows}
 Column {.sidebar}
 -----------------------------------------------------------------------
 
-Waiting time between eruptions and the duration of the eruption for the
-Old Faithful geyser in Yellowstone National Park, Wyoming, USA.
+<div class="page_2_sidemenu">
+  <img src="./img/ci_celltrion.png">
+  <div class="page_2_sidemenu_title">
+Celltrion, the new pioneer of the global biologics market has been contributing to the history of biosimilars.
+  </div>
+  <div class="page_2_sidemenu_content">
+Celltrion is a global biologics leading company having its main business as biosimilar, novel biologics, and CMO. Celltrion bravely took the first step forward in developing an antibody biosimilar, when everyone else in the field thought it was impossible during the period when the term biosimilar itself was unfamiliar.
+  </div>
+  <div class="page_2_sidemenu_content">
+Celltrion succeeded in obtaining a license for the novel biologics in 2012 for the first time in the world. Celltrion went on to achieve a remarkable feat of entering into the global market for the first time in the nation with its unquenchable innovative spirit, creativity, and keen insight that is ahead of our time. Naturally, Celltrion has become the leading biologics company in the Korean biologics industry as the pioneer of the biotechnology industry.
+  </div>
+</div>
 
 ```{r}
 # selectInput("n_breaks", label = "Number of bins:",
