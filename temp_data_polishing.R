@@ -44,8 +44,7 @@ KRX_DATA_ALL[,'date'] <- as.Date(KRX_DATA_ALL[,'date'])
 KRX_DATA_ALL[,'cap_mil'] <- KRX_DATA_ALL[,'cap_mil'] * 1000000
 
 # PICK BIO FROM KRX_DATA
-KRX_DATA_BIO <- filter(KRX_DATA_ALL, sector == "제약" | sector == "생물공학")
+KRX_DATA_BIO <- filter(KRX_DATA_ALL, sector == "PHM" | sector == "BIO")
 
 # SPLIT BY NAME
 KRX_DATA_BIO_bycode <- split(KRX_DATA_BIO, KRX_DATA_BIO[,'name'])
-
