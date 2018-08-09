@@ -1,0 +1,298 @@
+.of_hidden > div > div {
+    overflow: hidden;
+}
+.navbar-right {
+    display: none!important;
+}
+.fc_yello{
+	color:	#f8ac59;
+}
+.fc_white {
+    color: #FFFFFF;
+}
+.fc_red {
+    color: red;
+}
+.fc_pink {
+    color: #ed5565;
+}
+.fc_amer{
+	color: #23c6c8;
+}
+.fc_green{
+	color: #1ab394;
+}
+.fc_skyblue{
+	color: #1c84c6;
+}
+
+.bg_yello{
+	background-color:	#f8ac59;
+}
+.bg_white {
+    background-color: #FFFFFF;
+}
+.bg_red {
+    background-color: red;
+}
+.bg_pink {
+    background-color: #ed5565;
+}
+.bg_amer{
+	background-color: #23c6c8;
+}
+.bg_green{
+	background-color: #1ab394;
+}
+.bg_skyblue{
+	background-color: #1c84c6;
+}
+
+.chart-title {
+	font-weight: 500;
+}
+
+.label_1{
+    font-weight: 900;
+    padding: 4px 1px;
+    text-shadow: none;
+    border-radius: 0.25em;
+    line-height: 1;
+    white-space: nowrap;
+	float: right!important;
+	font-size: 12px;
+    width: 60px;
+    text-align: center;
+	margin-top: 15px;
+}
+
+.top_c_1{
+    font-size: 35px;
+    margin-top: -3px;
+}
+
+.sub_c_1{
+	font-size: 14px;
+	margin-top: -2px;
+}
+
+.sub_per_1 {
+	display:inline-block;
+    text-shadow: none;
+    border-radius: 0.25em;
+    line-height: 1;
+    white-space: nowrap;
+	float: right!important;
+	font-size: 15px;
+    width: 55px;
+    text-align: center;
+	position: absolute;
+    right: 0;
+    bottom: 24%;
+}
+
+/* .mid_fa_1{
+    position: absolute;
+    top: 44px;
+    left: 38%;
+	width: 9px;
+} */
+
+.fa_mid_1 {
+    float: right;
+    padding-top: 4px;
+}
+
+
+.label_1_bt{
+    font-weight: 900;
+    padding: 3px 1px;
+    text-shadow: none;
+    border-radius: 0.25em;
+    line-height: 1;
+    white-space: nowrap;
+	float: right!important;
+	font-size: 12px;
+    width: 45px;
+    text-align: center;
+}
+
+.fa_1_bt{
+	float:right;
+	margin-top:2px;
+}
+
+/* PAGE2 */
+.page_2_sidemenu {
+    padding-top: 50px;
+}
+
+.page_2_sidemenu > img {
+    height: 58px;
+    margin-bottom: 40px;
+}
+
+
+.page_2_sidemenu > .icons {
+    width: 100%;
+    margin-bottom: 40px;
+    color: gray;
+}
+
+.page_2_sidemenu > .icons > svg {
+    font-size: 58px;
+    margin-left: 9px;
+    margin-right: 9px;
+}
+
+.page_2_sidemenu_title {
+    font-weight: bold;
+    font-size: 16px;
+    margin-bottom: 23px;
+}
+
+.page_2_sidemenu_content {
+    font-size: 14px;
+    margin-top : 10px;
+}
+
+
+.page_2_top_wrap > div {
+    background: none;
+    border: none;
+}
+
+.page_2_top_wrap .dygraph-axis-label {
+    display: none;
+} 
+.page_2_top_wrap .dygraph-axis-label-x {
+    display: none;
+}
+.page_2_top_wrap .dygraph-axis-label-y{
+    display: none;
+}
+
+.page_2_top_wrap .dygraphs {
+    margin-left: -30px;
+}
+
+.page_2_top_wrap .html-widget-static-bound {
+    margin-left: -30px;
+}
+
+.page_2_fa_top_1{
+    position: absolute;
+    left: 171px;
+    padding-top: 9px; 
+}
+
+.page_2_fa_top_2{
+    position: absolute;
+    left: 138px;
+    padding-top: 9px; 
+}
+
+.page_2_label_1 {
+    font-weight: 900;
+    padding: 4px 1px;
+    text-shadow: none;
+    border-radius: 0.25em;
+    line-height: 1;
+    white-space: nowrap;
+	/* float: right!important;  */
+	font-size: 12px;
+    width: 60px;
+    text-align: center;
+    position: absolute;
+    top: 33px;
+    left: 28%;
+}
+
+.page_2_top_title {
+    font-size: 30px;
+    margin-top: -10px;
+}
+
+.page_2_top_title_sub {
+    position: absolute;
+    font-size: 14px;
+}
+
+.page_2_top_atr  {
+    width: 50%;
+    float: left;
+    font-size: 30px;
+    margin-top: 9px
+}
+
+.page_2_top_atr > div {
+    margin-top: 11px;
+}
+
+.page_2_top_wpr {
+    width: 50%;
+    float: right;
+    font-size: 30px;
+    margin-top: 9px
+}
+
+.page_2_top_wpr > div {
+    margin-top: 11px;
+}
+.page_2_top_atr_sub{
+    font-size: 14px;
+    position: absolute;
+    margin-top: -4px;
+}
+
+.page_2_top_wpr_sub {
+    font-size: 14px;
+    position: absolute;
+    margin-top: -4px;
+}
+
+.page_2_mid_title_sub {
+    font-size: 12px;
+}
+
+.page_2_mid_max, 
+.page_2_mid_avr, 
+.page_2_mid_min {
+    width: 33%;
+    display: inline-block;
+    float: left;
+}
+
+
+.page_2_chart_wrap > div {
+    background: none;
+    border: none;
+}
+
+/* .page_2_chart_wrap .dygraph-axis-label-y{
+    display: none;
+} */
+
+.page_2_midup_max {
+    width: 50%;
+    display: inline-block;
+    float: left;
+}
+
+.page_2_midup_avr {
+    width: 50%;
+    display: inline-block;
+    float: right;  
+}
+
+.page_2_mid_atr{
+    width: 50%;
+    display: inline-block;
+    float: left;
+}
+
+.page_2_mid_wpr{
+    width: 50%;
+    display: inline-block;
+    float: right;
+}

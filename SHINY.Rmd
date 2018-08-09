@@ -1,0 +1,649 @@
+---
+title: "BIO SECTOR OVERVIEW in KRX"
+runtime: shiny
+output: 
+  flexdashboard::flex_dashboard:
+    theme: lumen
+    css: styles.css
+    source: embed
+---
+
+```{r global, include=FALSE}
+library(readxl)
+library(tidyverse)
+library(reshape2)
+library(xts)
+library(dygraphs)
+library(plotly)
+library(quantmod)
+library(knitr)
+library(kableExtra)
+theme_set(theme_classic())
+
+#OPTION
+options(crayon.enabled = FALSE)
+options(stringsAsFactors=FALSE)
+
+source('./DATA/data_polishing.R')
+```
+
+
+OVERVIEW {data-orientation=rows}
+===================================== 
+
+Column {.sidebar}
+-----------------------------------------------------------------------
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
+<div class="page_2_sidemenu">
+  <div class="icons">
+  <i class="fas fa-prescription-bottle-alt"></i><i class="fab fa-medium"></i><i class="fas fa-pills"></i>
+  </div>
+  <div class="page_2_sidemenu_title">
+Biotechnology is the broad area of science involving living systems and organisms to develop or make products.
+  </div>
+  <div class="page_2_sidemenu_content">
+The wide concept of "biotech" or "biotechnology" encompasses a wide range of procedures for modifying living organisms according to human purposes, going back to domestication of animals, cultivation of the plants, and "improvements" to these through breeding programs that employ artificial selection and hybridization.
+  </div>
+  <div class="page_2_sidemenu_content">
+Pharmacogenomics (a combination of pharmacology and genomics) is the technology that analyses how genetic makeup affects an individual's response to drugs.[18] It deals with the influence of genetic variation on drug responses in patients by correlating gene expression or single-nucleotide polymorphisms with a drug's efficacy or toxicity.
+  </div>
+</div>
+
+Row {data-height=140}
+-------------------------------------
+
+
+
+### Market Capitalization {data-height=140, class='of_hidden'}
+<span class="label_1 bg_green fc_white">Daily</span>
+<div class="top_c_1">
+```{r}
+renderText(sum_cap_mil_last_text)
+```
+  <p class="sub_c_1">Total MK (18/04/30)</p>
+  <span class= "sub_per_1 fc_green">
+    32%
+    <i class="fa fa-bolt fa_1"></i>
+  </span>
+</div>
+
+
+
+### Trading Volume {data-height=140, class='of_hidden'}
+<span class="label_1 bg_green fc_white">Daily</span>
+<div class="top_c_1">
+```{r}
+renderText(sum_vol_m_last_text)
+```
+  <p class="sub_c_1">Total TV (18/04/30)</p>
+  <span class= "sub_per_1 fc_green">
+    21%
+    <i class="fas fa-level-up-alt fa_1"></i>
+  </span>
+</div>
+
+    
+### MC/TV Ratio {data-height=140, class='of_hidden'}
+<span class="label_1 bg_amer fc_white">Monthly</span>
+<div class="top_c_1">
+```{r}
+renderText(cap_vol_text)
+```
+  <p class="sub_c_1">MC per TV</p>
+  <span class= "sub_per_1 fc_amer">
+    16%
+    <i class="fas fa-level-up-alt fa_1"></i>
+  </span>
+</div>
+
+
+### Total Count {data-height=140, class='of_hidden'}
+<span class="label_1 bg_skyblue fc_white">Quarterly</span>
+<div class="top_c_1">
+```{r}
+renderText(total_count)
+```
+  <p class="sub_c_1">All Bio stocks</p>
+  <span class= "sub_per_1 fc_skyblue">
+    10%
+    <i class="fas fa-level-down-alt fa_1"></i>
+  </span>
+</div>
+
+
+
+
+Row
+-------------------------------------
+
+### BIO Market CAP and KRX chart {data-width=75%}
+
+```{r}
+BIO_Market_CAP_and_KRX_chart
+```
+
+
+### TOP TIER  {data-width=25%, class='of_hidden'}
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:left;"> NAME </th>
+   <th style="text-align:center;"> M.CAP </th>
+   <th style="text-align:center;"> TRD.VOL </th>
+   <th style="text-align:center;"> TV_MK </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> 셀트리온 <i class="fas fa-caret-up fa_mid_1 fc_red"></i></td>
+   <td style="text-align:center;"> 33904 </td>
+   <td style="text-align:center;"> 281759 </td>
+   <td style="text-align:center;"> 0.83 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 삼성바이오로직스 <i class="fas fa-caret-up fa_mid_1 fc_red"></i></td>
+   <td style="text-align:center;"> 32289 </td>
+   <td style="text-align:center;"> 115669 </td>
+   <td style="text-align:center;"> 0.36 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 셀트리온헬스케어 <i class="fas fa-caret-up fa_mid_1 fc_red"></i></td>
+   <td style="text-align:center;"> 12596 </td>
+   <td style="text-align:center;"> 81590 </td>
+   <td style="text-align:center;"> 0.65 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 신라젠 <i class="fas fa-caret-up fa_mid_1 fc_red"></i></td>
+   <td style="text-align:center;"> 5835 </td>
+   <td style="text-align:center;"> 137089 </td>
+   <td style="text-align:center;"> 2.35 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 한미약품 <i class="fas fa-caret-down fa_mid_1 fc_skyblue"></i></td>
+   <td style="text-align:center;"> 5306 </td>
+   <td style="text-align:center;"> 21352 </td>
+   <td style="text-align:center;"> 0.40 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 한미사이언스 <i class="fas fa-caret-up fa_mid_1 fc_red"></i></td>
+   <td style="text-align:center;"> 4940 </td>
+   <td style="text-align:center;"> 6468 </td>
+   <td style="text-align:center;"> 0.13 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 메디톡스 <i class="fas fa-caret-up fa_mid_1 fc_red"></i></td>
+   <td style="text-align:center;"> 3946 </td>
+   <td style="text-align:center;"> 17520 </td>
+   <td style="text-align:center;"> 0.44 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 바이로메드 <i class="fas fa-caret-up fa_mid_1 fc_red"></i></td>
+   <td style="text-align:center;"> 3455 </td>
+   <td style="text-align:center;"> 30133 </td>
+   <td style="text-align:center;"> 0.87 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 셀트리온제약 <i class="fas fa-caret-down fa_mid_1 fc_skyblue"></i></td>
+   <td style="text-align:center;"> 2958 </td>
+   <td style="text-align:center;"> 33392 </td>
+   <td style="text-align:center;"> 1.13 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 유한양행 <i class="fas fa-caret-down fa_mid_1 fc_skyblue"></i></td>
+   <td style="text-align:center;"> 2796 </td>
+   <td style="text-align:center;"> 13471 </td>
+   <td style="text-align:center;"> 0.48 </td>
+  </tr>
+</tbody>
+</table>
+
+
+
+Row
+-------------------------------------
+    
+### 
+    
+```{r}
+page_1_bt_left
+```
+
+### Trading Volume & Market CAP Trend (Aver.)
+    
+```{r}
+Trading_Volume_and_Market_CAP
+```
+    
+### TOP TIER INFO
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto; padding: 0px;">
+<thead class="tableFloatingHeaderOriginal" style="position: static; margin-top: 0px; left: 1375px; z-index: 3; width: 511px; top: 627.156px;">
+<tr>
+<th style="text-align: left; min-width: 0px; max-width: none;">
+name
+</th>
+<th style="text-align: left; min-width: 0px; max-width: none;">
+sector
+</th>
+<th style="text-align: center; min-width: 0px; max-width: none;">
+close
+</th>
+<th style="text-align: center; min-width: 0px; max-width: none;">
+ATR
+</th>
+<th style="text-align: center; min-width: 0px; max-width: none;">
+A.Ratio
+</th>
+<th style="text-align: center; min-width: 0px; max-width: none;">
+WPR
+</th>
+</tr>
+</thead><thead class="tableFloatingHeader" style="opacity: 0; display: none;">
+<tr>
+<th style="text-align:left;">
+name
+</th>
+<th style="text-align:left;">
+sector
+</th>
+<th style="text-align:center;">
+close
+</th>
+<th style="text-align:center;">
+ATR
+</th>
+<th style="text-align:center;">
+A.Ratio
+</th>
+<th style="text-align:center;">
+WPR
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+셀트리온 <span class="label_1_bt bg_yello fc_white">수급</span>
+</td>
+<td style="text-align:left;">
+제약 <i class="fas fa-capsules fa_1_bt"></i>
+</td>
+<td style="text-align:center;">
+271000
+</td>
+<td style="text-align:center;">
+15150
+</td>
+<td style="text-align:center;">
+5.59%
+</td>
+<td style="text-align:center;">
+0.28
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+삼성바이오로직스 
+</td>
+<td style="text-align:left;">
+제약 <i class="fas fa-capsules fa_1_bt"></i>
+</td>
+<td style="text-align:center;">
+488000
+</td>
+<td style="text-align:center;">
+22449
+</td>
+<td style="text-align:center;">
+4.6%
+</td>
+<td style="text-align:center;">
+0.34
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+셀트리온헬스케어
+</td>
+<td style="text-align:left;">
+제약 <i class="fas fa-prescription-bottle-alt fa_1_bt"></i>
+</td>
+<td style="text-align:center;">
+89800
+</td>
+<td style="text-align:center;">
+4525
+</td>
+<td style="text-align:center;">
+5.04%
+</td>
+<td style="text-align:center;">
+0.30
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+신라젠 <span class="label_1_bt bg_pink fc_white">급등</span>
+</td>
+<td style="text-align:left;">
+생물공학 <i class="fas fa-vial fa_1_bt"></i>
+</td>
+<td style="text-align:center;">
+84100
+</td>
+<td style="text-align:center;">
+5149
+</td>
+<td style="text-align:center;">
+6.12%
+</td>
+<td style="text-align:center;">
+0.55
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+한미약품 <span class="label_1_bt bg_pink fc_white">급등</span>
+</td>
+<td style="text-align:left;">
+제약 <i class="fas fa-capsules fa_1_bt"></i>
+</td>
+<td style="text-align:center;">
+466000
+</td>
+<td style="text-align:center;">
+17688
+</td>
+<td style="text-align:center;">
+3.8%
+</td>
+<td style="text-align:center;">
+0.54
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+한미사이언스 <span class="label_1_bt bg_amer fc_white">안정</span>
+</td>
+<td style="text-align:left;">
+제약 <i class="fas fa-prescription-bottle-alt fa_1_bt"></i>
+</td>
+<td style="text-align:center;">
+77800
+</td>
+<td style="text-align:center;">
+2743
+</td>
+<td style="text-align:center;">
+3.53%
+</td>
+<td style="text-align:center;">
+0.93
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+메디톡스 
+</td>
+<td style="text-align:left;">
+생물공학 <i class="fas fa-prescription-bottle-alt fa_1_bt"></i>
+</td>
+<td style="text-align:center;">
+697600
+</td>
+<td style="text-align:center;">
+27363
+</td>
+<td style="text-align:center;">
+3.92%
+</td>
+<td style="text-align:center;">
+0.17
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+바이로메드
+</td>
+<td style="text-align:left;">
+생물공학 <i class="fas fa-vial fa_1_bt"></i>
+</td>
+<td style="text-align:center;">
+216500
+</td>
+<td style="text-align:center;">
+8271
+</td>
+<td style="text-align:center;">
+3.82%
+</td>
+<td style="text-align:center;">
+0.35
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+셀트리온제약 <span class="label_1_bt bg_yello fc_white">수급</span>
+</td>
+<td style="text-align:left;">
+제약 <i class="fas fa-capsules fa_1_bt"></i>
+</td>
+<td style="text-align:center;">
+86900
+</td>
+<td style="text-align:center;">
+4977
+</td>
+<td style="text-align:center;">
+5.73%
+</td>
+<td style="text-align:center;">
+0.74
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+유한양행
+</td>
+<td style="text-align:left;">
+제약 <i class="fas fa-capsules fa_1_bt"></i>
+</td>
+<td style="text-align:center;">
+229000
+</td>
+<td style="text-align:center;">
+8440
+</td>
+<td style="text-align:center;">
+3.69%
+</td>
+<td style="text-align:center;">
+0.73
+</td>
+</tr>
+</tbody>
+</table>
+
+
+DETAILS {data-orientation=rows}
+===================================== 
+
+Column {.sidebar}
+-----------------------------------------------------------------------
+
+<div class="page_2_sidemenu">
+  <img src="./img/ci_celltrion.png">
+  <div class="page_2_sidemenu_title">
+Celltrion, the new pioneer of the global biologics market has been contributing to the history of biosimilars.
+  </div>
+  <div class="page_2_sidemenu_content">
+Celltrion is a global biologics leading company having its main business as biosimilar, novel biologics, and CMO. Celltrion bravely took the first step forward in developing an antibody biosimilar, when everyone else in the field thought it was impossible during the period when the term biosimilar itself was unfamiliar.
+  </div>
+  <div class="page_2_sidemenu_content">
+Celltrion succeeded in obtaining a license for the novel biologics in 2012 for the first time in the world. Celltrion went on to achieve a remarkable feat of entering into the global market for the first time in the nation with its unquenchable innovative spirit, creativity, and keen insight that is ahead of our time. Naturally, Celltrion has become the leading biologics company in the Korean biologics industry as the pioneer of the biotechnology industry.
+  </div>
+</div>
+
+```{r}
+# selectInput("n_breaks", label = "Number of bins:",
+#             choices = c(10, 20, 35, 50), selected = 20)
+# 
+# sliderInput("bw_adjust", label = "Bandwidth adjustment:",
+#             min = 0.2, max = 2, value = 1, step = 0.2)
+```
+
+
+Row {data-height=130px, class='page_2_top_wrap'}
+-------------------------------------
+
+### {class='of_hidden'}
+<div class="page_2_top_title"><i class="fas fa-caret-down page_2_fa_top_1 fc_green"></i>
+```{r}
+renderText(page_2_m.c_last)
+```
+<span class="page_2_top_title_sub">Market capitalization (18/04/30)</span>
+</div>
+
+###  {class='of_hidden'}
+<div class="page_2_top_title"><i class="fas fa-caret-up page_2_fa_top_2 fc_red"></i>
+```{r}
+renderText(page_2_t.v_last)
+```
+<span class="page_2_top_title_sub">Trading Volume (18/04/30)</span>
+</div>
+
+###
+<div class ='page_2_top_atr'><span class="page_2_label_1 bg_green fc_white">GAZUA</span>
+<span class="page_2_top_atr_sub">LAST ATR</span>
+```{r}
+renderText(page_2_ATR_WPR_top[[1]])
+```
+</div>
+
+<div class ='page_2_top_wpr'>
+<span class="page_2_top_wpr_sub">LAST WPR</span>
+```{r}
+renderText(page_2_ATR_WPR_top[[2]])
+```
+</div>
+    
+    
+
+Row {data-height=110px, class='page_2_top_wrap'}
+-------------------------------------
+    
+###
+```{r}
+page_2_m.cap_chart
+```
+
+###
+```{r} 
+page_2_t.v_chart
+```
+
+###
+<div class ='page_2_midup_max'>
+<span class="page_2_midup_title_sub">Max ATR Term</span>
+```{r}
+renderText(page_2_ATR_WPR_max[1])
+```
+</div>
+
+<div class ='page_2_midup_avr'>
+<span class="page_2_midup_title_sub">Max WPR Term</span>
+```{r}
+renderText(page_2_ATR_WPR_max[2])
+```
+</div>
+
+
+Row {data-height=100px, class='page_2_top_wrap'}
+-------------------------------------
+    
+### {class=''}
+
+<div class ='page_2_mid_max'>
+<span class="page_2_mid_title_sub">Max M.CAP Term</span>
+```{r}
+renderText(page_2_m.c_max)
+```
+</div>
+
+<div class ='page_2_mid_avr'>
+<span class="page_2_mid_title_sub">Avr M.CAP Term</span>
+```{r}
+renderText(page_2_m.c_avr)
+```
+</div>
+
+<div class ='page_2_mid_min'>
+<span class="page_2_mid_title_sub">Min M.CAP Term</span>
+```{r}
+renderText(page_2_m.c_min)
+```
+</div>
+
+
+###
+<div class ='page_2_mid_max'>
+<span class="page_2_mid_title_sub">Max T.VOL Term</span>
+```{r}
+renderText(page_2_t.v_max)
+```
+</div>
+
+<div class ='page_2_mid_avr'>
+<span class="page_2_mid_title_sub">Avr T.VOL Term</span>
+```{r}
+renderText(page_2_t.v_avr)
+```
+</div>
+
+<div class ='page_2_mid_min'>
+<span class="page_2_mid_title_sub">Min T.VOL Term</span>
+```{r}
+renderText(page_2_t.v_min)
+```
+</div>
+
+
+###
+<div class ='page_2_mid_atr'>
+<span class="page_2_mid_title_sub">MIN ATR during Term</span>
+```{r}
+renderText(page_2_ATR_WPR_min[1])
+```
+</div>
+
+<div class ='page_2_mid_wpr'>
+<span class="page_2_mid_title_sub">MIN WPR during Term</span>
+```{r}
+renderText(page_2_ATR_WPR_min[2])
+```
+</div>
+
+
+
+
+Row {class='page_2_chart_wrap'}
+-------------------------------------
+###
+```{r}
+page_2_p_tv_chart
+```
+
+
+
+Row {data-height=600px}
+-------------------------------------
+### HISTORICAL DATA
+<div class="">
+```{r}
+Total_Kable_render
+```
+</div>
+
+     
+     
+     
+     
